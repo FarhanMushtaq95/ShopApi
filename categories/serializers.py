@@ -18,7 +18,11 @@ class CategoryIdAndNameSerializer(serializers.ModelSerializer):
     )
     '''
 
-    image_urls = serializers.SerializerMethodField()
+    image_urls = serializers.SerializerMethodField('get_image_urls')
+    icons = serializers.SerializerMethodField('get_icons')
+
+    def get_icons(self,instance):
+        return 'f432'
 
     def get_image_urls(self, category):
         if self.context.get('include_urls', False):
@@ -68,4 +72,4 @@ class CategoryIdAndNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image_urls']
+        fields = ['id', 'name', 'image_urls','icons']
