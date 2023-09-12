@@ -24,6 +24,7 @@ class Product(TimestampedModel):
         Category, related_name='products'
     )
     stock = models.IntegerField(validators=[MinValueValidator(0)])
+    top = models.BooleanField(default=False, null=True, blank=True)
 
     def save(self, slug="", *args, **kwargs):
         if not self.publish_on:
