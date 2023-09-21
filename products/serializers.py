@@ -16,7 +16,7 @@ class ProductListSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'price', 'stock', 'comments_count', 'tags', 'image_urls', 'categories','top']
+        fields = ['id', 'name', 'slug', 'price', 'stock', 'comments_count', 'tags', 'image_urls', 'categories','top' , 'description']
 
     def get_comments_count(self, product):
         return getattr(product, 'comments__count', None)

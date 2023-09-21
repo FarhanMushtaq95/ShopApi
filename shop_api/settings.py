@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'users',
     'addresses',
     'fileuploads',
+    'daewoobuss',
 
     # 3rd party apss
     'corsheaders',

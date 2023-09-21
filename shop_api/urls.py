@@ -25,4 +25,6 @@ urlpatterns = [
     path('api/', include('users.urls', namespace='users')),
     path('api/', include('tags.urls', namespace='tags')),
     path('api/', include('categories.urls', namespace='categories')),
+    path('api/', include('daewoobuss.urls', namespace='categories')),
+
 ]
