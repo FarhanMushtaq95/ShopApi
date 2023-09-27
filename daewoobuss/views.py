@@ -8,8 +8,70 @@ from shared.renderers import AppJsonRenderer
 from daewoobuss.serializers import DaewooBussSerializer
 # same as extending from generics.ListAPIView, generics.CreateAPIView
 from users.authentication import IsAdminOrReadOnly
+from django.http import JsonResponse
 # Create your views here.
+"""
+{
+            "RESERVATIONDATE": "20230929",
+            "SCHEDULE_CODE": "1966204",
+            "DEPARTURE_SEQ": "2",
+            "ARRIVAL_SEQ": "4",
+            "SCHEDULE_ROUTE": "16110",
+            "SCHEDULE_ROUTE_NAME": "LHK-LHR-KWL-MTN",
+            "SCHEDULE_DEPARTURE_TIME": "0230",
+            "SCHEDULE_ARRIVAL_TIME": "0635",
+            "SCHEDULE_TIMECODE": "1",
+            "FARE_FARE": "2050",
+            "FARE_Y": "0",
+            "BUSTYPE_NAME": "D-45",
+            "BUSTYPE_SEATS": "45",
+            "STAFF_SEAT": "2",
+            "AVAILABLE": "44",
+            "TRIP_STATUS": "OK",
+            "SCHEDULE_BUSTYPE": "12",
+            "BUS_VIA": " "
+        },
+"""
+class BussTicketBooking(APIView):
+    def post(self, request, format=None):
+        try:
+            # Step 1: Obtain CLIENT_TOKEN
+            url_token = "https://testapi.daewoo.net.pk/api/secureplatform/token/getToken"
+            headers_token = {
+                "x-client_id": "DES-0000",
+                "x-client_password": "$desTination71024021",
+                "x-client_key": "testDestination71024021"
+            }
 
+            response_token = requests.get(url_token, headers=headers_token)
+            response_token.raise_for_status()  # Raise HTTPError for bad responses
+            client_token = response_token.json().get('CLIENT_TOKEN')
+
+            if not client_token:
+                return Response({'error': 'Unable to obtain CLIENT_TOKEN'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Step 2: Use CLIENT_TOKEN to make the main API request
+            url_main_api = "https://testapi.daewoo.net.pk/api/booking/bookSeat"  # Replace with your actual main API endpoint
+            headers_main_api = {
+                "x-client_id": "DES-0000",
+                "x-client_password": "$desTination71024021",
+                "x-client-token": client_token
+            }
+
+            payload = request.data  # Use the payload from the request body
+            payload["CLIENT_TOKEN"] = client_token
+
+            response_main_api = requests.post(url_main_api, json=payload, headers=headers_main_api)
+            response_main_api.raise_for_status()  # Raise HTTPError for bad responses
+
+            if response_main_api.status_code == 200:
+                return Response(response_main_api.json(), status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Failed to make main API request'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except requests.exceptions.RequestException as e:
+            return Response({'error': f'Error making API request: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'error': f'An unexpected error occurred: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class DataInsertion(APIView):
     def get(self, request):
