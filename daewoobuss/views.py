@@ -13,20 +13,20 @@ from django.http import JsonResponse
 """
 {
             "RESERVATIONDATE": "20230929",
-            "SCHEDULE_CODE": "1966204",
-            "DEPARTURE_SEQ": "2",
+            "SCHEDULE_CODE": "1965734",
+            "DEPARTURE_SEQ": "1",
             "ARRIVAL_SEQ": "4",
-            "SCHEDULE_ROUTE": "16110",
-            "SCHEDULE_ROUTE_NAME": "LHK-LHR-KWL-MTN",
-            "SCHEDULE_DEPARTURE_TIME": "0230",
-            "SCHEDULE_ARRIVAL_TIME": "0635",
+            "SCHEDULE_ROUTE": "16755",
+            "SCHEDULE_ROUTE_NAME": "LHR-RWP-SHM-AFC-ABT",
+            "SCHEDULE_DEPARTURE_TIME": "0600",
+            "SCHEDULE_ARRIVAL_TIME": "1220",
             "SCHEDULE_TIMECODE": "1",
-            "FARE_FARE": "2050",
+            "FARE_FARE": "2580",
             "FARE_Y": "0",
             "BUSTYPE_NAME": "D-45",
             "BUSTYPE_SEATS": "45",
             "STAFF_SEAT": "2",
-            "AVAILABLE": "44",
+            "AVAILABLE": "43",
             "TRIP_STATUS": "OK",
             "SCHEDULE_BUSTYPE": "12",
             "BUS_VIA": " "
@@ -36,7 +36,7 @@ class BussTicketBooking(APIView):
     def post(self, request, format=None):
         try:
             # Step 1: Obtain CLIENT_TOKEN
-            url_token = "https://testapi.daewoo.net.pk/api/secureplatform/token/getToken"
+            url_token = "https://daewootestapi.daewoo.net.pk/api/secureplatform/token/getToken"
             headers_token = {
                 "x-client_id": "DES-0000",
                 "x-client_password": "$desTination71024021",
@@ -51,16 +51,15 @@ class BussTicketBooking(APIView):
                 return Response({'error': 'Unable to obtain CLIENT_TOKEN'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Step 2: Use CLIENT_TOKEN to make the main API request
-            url_main_api = "https://testapi.daewoo.net.pk/api/booking/bookSeat"  # Replace with your actual main API endpoint
+            url_main_api = "https://daewootestapi.daewoo.net.pk/api/booking/bookSeat"  # Replace with your actual main API endpoint
             headers_main_api = {
                 "x-client_id": "DES-0000",
                 "x-client_password": "$desTination71024021",
                 "x-client-token": client_token
             }
 
-            payload = request.data  # Use the payload from the request body
+            payload = request.data # Use the payload from the request body
             payload["CLIENT_TOKEN"] = client_token
-
             response_main_api = requests.post(url_main_api, json=payload, headers=headers_main_api)
             response_main_api.raise_for_status()  # Raise HTTPError for bad responses
 
@@ -117,6 +116,61 @@ class BussRouteView(APIView):
 
             return Response({
                 "Data": external_data["Data"]
+            })
+        else:
+            return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
+
+
+class DetailBookingView(APIView):
+    def get(self,request):
+        # Get query parameters from the request
+        booking_date = request.query_params.get('bookingDate')
+        booking_mobile_no = request.query_params.get('bookingMobileNo')
+        booking_no = request.query_params.get('bookingNo')
+
+        # Make a request to the external API
+        url = f"https://daewootestapi.daewoo.net.pk/api/booking/getBookingDetails?bookingDate={booking_date}&bookingMobileNo={booking_mobile_no}&bookingNo={booking_no}"
+        headers = {
+            "x-client_id": "DES-0000",  # Replace with your actual client ID
+            "x-client_password": "$desTination71024021"
+        }
+
+        response = requests.get(url, headers=headers)
+
+        # Check if the request to the external API was successful
+        if response.status_code == 200:
+            external_data = response.json()
+
+
+            return Response({
+                "Data": external_data["Data"]
+            })
+        else:
+            return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
+
+class CancleBookingView(APIView):
+    def get(self,request):
+        # Get query parameters from the request
+        booking_date = request.query_params.get('bookingDate')
+        booking_mobile_no = request.query_params.get('bookingMobileNo')
+        booking_no = request.query_params.get('bookingNo')
+
+        # Make a request to the external API
+        url = f"https://daewootestapi.daewoo.net.pk/api/booking/cancelBooking?bookingDate={booking_date}&bookingMobileNo={booking_mobile_no}&bookingNo={booking_no}"
+        headers = {
+            "x-client_id": "DES-0000",  # Replace with your actual client ID
+            "x-client_password": "$desTination71024021"
+        }
+
+        response = requests.post(url, headers=headers)
+
+        # Check if the request to the external API was successful
+        if response.status_code == 200:
+            external_data = response.json()
+
+
+            return Response({
+                "Data": external_data
             })
         else:
             return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
