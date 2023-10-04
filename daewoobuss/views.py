@@ -121,6 +121,37 @@ class BussRouteView(APIView):
             return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
 
 
+class BussSeatsView(APIView):
+    def get(self,request):
+        # Get query parameters from the request
+        scheduleDate = request.query_params.get('scheduleDate')
+        scheduleCode = request.query_params.get('scheduleCode')
+        scheduleTimeCode = request.query_params.get('scheduleTimeCode')
+        departureSeq = request.query_params.get('departureSeq')
+        arrivalSeq = request.query_params.get('arrivalSeq')
+        departureId = request.query_params.get('departureId')
+        arrivalId = request.query_params.get('arrivalId')
+        busTypeId = request.query_params.get('busTypeId')
+
+        # Make a request to the external API
+        url = f"https://testapi.daewoo.net.pk/api/schedule/getBusSeats?scheduleDate={scheduleDate}&scheduleCode={scheduleCode}&scheduleTimeCode={scheduleTimeCode}&departureSeq={departureSeq}&arrivalSeq={arrivalSeq}&departureId={departureId}&arrivalId={arrivalId}&busTypeId={busTypeId}"
+        headers = {
+            "x-client_id": "DES-0000",  # Replace with your actual client ID
+            "x-client_password": "$desTination71024021"
+        }
+
+        response = requests.get(url, headers=headers)
+
+        # Check if the request to the external API was successful
+        if response.status_code == 200:
+            external_data = response.json()
+
+
+            return Response(external_data)
+        else:
+            return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
+
+
 class DetailBookingView(APIView):
     def get(self,request):
         # Get query parameters from the request
