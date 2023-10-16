@@ -205,3 +205,8 @@ class CancleBookingView(APIView):
             })
         else:
             return Response({'error': 'Failed to fetch data from the external API'}, status=response.status_code)
+
+
+class MyCallBack(APIView):
+    def post(self, request):
+        return Response(request, status=status.HTTP_201_CREATED)

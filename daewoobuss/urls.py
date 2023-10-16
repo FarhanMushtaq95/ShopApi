@@ -1,7 +1,7 @@
 from django.urls import path
 
 from daewoobuss.views import DataInsertion, BussStationListView, BussRouteView, BussTicketBooking, DetailBookingView, \
-    CancleBookingView, BussSeatsView
+    CancleBookingView, BussSeatsView, MyCallBack
 
 app_name = 'daewoobuss'
 urlpatterns = [
@@ -12,6 +12,9 @@ urlpatterns = [
     path('daewoo/bookingDetail/', DetailBookingView.as_view(), name='buss_booking_detail'),
     path('daewoo/cancelBooking/', CancleBookingView.as_view(), name='buss_cancel_booking'),
     path('daewoo/bussSeats/', BussSeatsView.as_view(), name='buss_seats'),
+
+    # CALLBACK
+    path('callback/', MyCallBack.as_view(), name='post_data'),
 
 
 
