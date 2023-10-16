@@ -209,4 +209,4 @@ class CancleBookingView(APIView):
 
 class MyCallBack(APIView):
     def get(self, request):
-        return Response(request, status=status.HTTP_201_CREATED)
+        return Response(request.data, status=status.HTTP_201_CREATED)
